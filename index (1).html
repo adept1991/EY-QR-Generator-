@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EY QR Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{--ey-grey:#2E2E38;--ey-yellow:#FFE600;--bg:#F3F3F5;--card:#fff;--text:#2E2E38;--muted:#6b6b76;--line:#d9d9df;--field:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1a1a24;--card:#2E2E38;--text:#f4f4f6;--muted:#a8a8b3;--line:#4a4a57;--field:#23232c}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1a1a24;--card:#2E2E38;--text:#f4f4f6;--muted:#a8a8b3;--line:#4a4a57;--field:#23232c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Helvetica Neue",Arial,sans-serif;line-height:1.5}
+header{background:var(--ey-grey);color:#fff;padding:18px 20px;border-bottom:4px solid var(--ey-yellow)}
+.bar{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1}
+.beam{width:34px;height:9px;background:var(--ey-yellow);transform:skewX(-28deg);margin:0 0 5px 6px}
+.logo b{font-size:30px;font-weight:800;letter-spacing:-1px;color:#fff}
+.title{border-left:1px solid #5a5a68;padding-left:14px}
+.title h1{margin:0;font-size:20px;font-weight:700}
+.title p{margin:0;font-size:13px;color:#c4c4cc}
+main{max-width:1040px;margin:0 auto;padding:24px 16px 40px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){main{grid-template-columns:1fr}.title p{display:none}}
+section{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--ey-grey);padding:22px}
+h2{margin:0 0 14px;font-size:18px}
+label,.lbl{display:block;font-weight:700;font-size:14px;margin:18px 0 8px}
+input[type=url],input[type=text]{width:100%;padding:13px 14px;font-size:16px;border:2px solid var(--line);background:var(--field);color:var(--text);border-radius:0;font-family:inherit}
+input:focus,button:focus-visible,.opt:focus-within{outline:3px solid var(--ey-yellow);outline-offset:1px;border-color:var(--ey-grey)}
+.err{color:#c0262d;font-size:13px;min-height:20px;margin:6px 0 0}
+@media (prefers-color-scheme:dark){.err{color:#ff8a8f}}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{position:relative;border:2px solid var(--line);padding:10px 6px;text-align:center;cursor:pointer;font-size:13px;background:var(--field)}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.opt:has(input:checked){border-color:var(--ey-grey);background:var(--ey-yellow);color:#2E2E38;font-weight:700}
+.opt svg{display:block;margin:0 auto 6px;width:38px;height:38px}
+.sw{display:inline-block;width:14px;height:14px;border:1px solid #888;vertical-align:-2px;margin-right:6px}
+.preview{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px}
+.qrbox{width:100%;max-width:320px;aspect-ratio:1;border:1px solid var(--line);cursor:zoom-in;display:flex;align-items:center;justify-content:center;background:#fff}
+.qrbox svg{width:100%;height:100%;display:block}
+.empty{color:var(--muted);text-align:center;padding:30px;font-size:14px;max-width:260px}
+.target{font-size:13px;color:var(--muted);margin:12px 0 0;word-break:break-all;text-align:center;max-width:320px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;justify-content:center;width:100%}
+button{font:inherit;font-weight:700;padding:12px 18px;border:2px solid var(--ey-grey);background:var(--ey-yellow);color:#2E2E38;cursor:pointer;border-radius:0;flex:1 1 120px;min-height:46px}
+button.sec{background:transparent;color:var(--text);border-color:var(--text)}
+button:disabled{opacity:.4;cursor:not-allowed}
+select{padding:10px;font-size:14px;border:2px solid var(--line);background:var(--field);color:var(--text);border-radius:0;font-family:inherit}
+.note{font-size:12px;color:var(--muted);margin-top:14px}
+dialog{border:0;padding:0;max-width:min(92vw,620px);width:100%;background:var(--card);color:var(--text);border-top:6px solid var(--ey-yellow)}
+dialog::backdrop{background:rgba(20,20,28,.8)}
+.dlg{padding:20px}
+.dlg .qrbig{width:100%;max-width:520px;margin:0 auto;aspect-ratio:1;background:#fff;border:1px solid var(--line)}
+.dlg .qrbig svg{width:100%;height:100%;display:block}
+.toast{min-height:20px;font-size:13px;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="logo" aria-label="EY"><span class="beam"></span><b>EY</b></div>
+  <div class="title"><h1>QR Studio</h1><p>Turn any link into a scannable QR code</p></div>
+</div></header>
+
+<main>
+<section aria-labelledby="h-create">
+  <h2 id="h-create">Create your code</h2>
+  <label for="url">Website address</label>
+  <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://www.ey.com" spellcheck="false">
+  <p class="err" id="err" role="alert"></p>
+
+  <div class="lbl" id="l-style">QR style</div>
+  <div class="opts" role="radiogroup" aria-labelledby="l-style" id="styles"></div>
+
+  <div class="lbl" id="l-col">Colour</div>
+  <div class="opts" role="radiogroup" aria-labelledby="l-col" id="colors"></div>
+
+  <label for="ec">Error correction</label>
+  <select id="ec">
+    <option value="H">High – best if printed or partly covered</option>
+    <option value="Q">Quartile</option>
+    <option value="M">Medium</option>
+    <option value="L">Low – simplest pattern</option>
+  </select>
+  <p class="note">Codes always include a quiet border and dark-on-light contrast so phone cameras open the exact link you entered.</p>
+</section>
+
+<section class="preview" aria-live="polite">
+  <div id="stage"><div class="empty">Enter a web address to see your QR code here.</div></div>
+  <p class="target" id="target"></p>
+  <div class="row">
+    <button id="expand" class="sec" disabled>Expand</button>
+    <button id="dlpng" disabled>Download PNG</button>
+    <button id="dlsvg" class="sec" disabled>Download SVG</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label for="px" style="margin:0;align-self:center;font-weight:400">PNG size</label>
+    <select id="px"><option value="512">512 px</option><option value="1024" selected>1024 px</option><option value="2048">2048 px</option></select>
+  </div>
+  <div class="toast" id="toast"></div>
+</section>
+</main>
+
+<dialog id="dlg" aria-label="Expanded QR code"><div class="dlg">
+  <div class="qrbig" id="big"></div>
+  <p class="target" id="target2" style="max-width:none"></p>
+  <div class="row">
+    <button id="dlpng2">Download PNG</button>
+    <button id="dlsvg2" class="sec">Download SVG</button>
+    <button id="close" class="sec">Close</button>
+  </div>
+</div></dialog>
+
+<script>
+(function(){
+var STYLES=[{id:"square",name:"Square"},{id:"rounded",name:"Rounded"},{id:"dots",name:"Dots"}];
+var COLORS=[{id:"ey",name:"EY grey",fg:"#2E2E38",bg:"#FFFFFF"},{id:"yellow",name:"EY yellow",fg:"#2E2E38",bg:"#FFE600"},{id:"black",name:"Classic",fg:"#000000",bg:"#FFFFFF"}];
+var state={style:"square",color:"ey",svg:"",url:""};
+var $=function(i){return document.getElementById(i)};
+
+function preview(s){ // tiny style icon
+  var f="#2E2E38",o="";
+  var pts=[[0,0],[2,0],[4,0],[0,2],[4,2],[2,4],[0,4],[4,4],[2,2]];
+  pts.forEach(function(p){
+    var x=p[0]*6+3,y=p[1]*6+3;
+    if(s==="square")o+='<rect x="'+x+'" y="'+y+'" width="5.5" height="5.5" fill="'+f+'"/>';
+    else if(s==="rounded")o+='<rect x="'+x+'" y="'+y+'" width="5.5" height="5.5" rx="2" fill="'+f+'"/>';
+    else o+='<circle cx="'+(x+2.75)+'" cy="'+(y+2.75)+'" r="2.8" fill="'+f+'"/>';
+  });
+  return '<svg viewBox="0 0 36 36" aria-hidden="true">'+o+'</svg>';
+}
+function build(){
+  $("styles").innerHTML=STYLES.map(function(s,i){return '<label class="opt"><input type="radio" name="style" value="'+s.id+'"'+(i===0?' checked':'')+'>'+preview(s.id)+s.name+'</label>'}).join("");
+  $("colors").innerHTML=COLORS.map(function(c,i){return '<label class="opt"><input type="radio" name="color" value="'+c.id+'"'+(i===0?' checked':'')+'><span class="sw" style="background:'+c.bg+';box-shadow:inset 0 0 0 4px '+c.fg+'"></span>'+c.name+'</label>'}).join("");
+}
+function normalize(v){
+  v=v.trim(); if(!v)return "";
+  if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(v))v="https://"+v;
+  try{var u=new URL(v);
+    if(!/^https?:$/.test(u.protocol))return null;
+    if(!/\.[a-z]{2,}$/i.test(u.hostname)&&u.hostname!=="localhost"&&!/^\d+\.\d+\.\d+\.\d+$/.test(u.hostname))return null;
+    return u.href;
+  }catch(e){return null}
+}
+function makeSvg(url,style,color,ec){
+  var qr=qrcode(0,ec);qr.addData(url,"Byte");qr.make();
+  var n=qr.getModuleCount(),q=4,t=n+q*2,c=COLORS.filter(function(x){return x.id===color})[0],d="";
+  function fin(r,cc){return (r<7&&cc<7)||(r<7&&cc>=n-7)||(r>=n-7&&cc<7)}
+  for(var r=0;r<n;r++)for(var k=0;k<n;k++){
+    if(!qr.isDark(r,k))continue;
+    var x=k+q,y=r+q;
+    if(style==="dots"&&!fin(r,k))d+='<circle cx="'+(x+.5)+'" cy="'+(y+.5)+'" r=".42"/>';
+    else if(style==="rounded")d+='<rect x="'+x+'" y="'+y+'" width="1.02" height="1.02" rx=".32"/>';
+    else if(style==="dots")d+='<rect x="'+x+'" y="'+y+'" width="1.02" height="1.02" rx=".15"/>';
+    else d+='<rect x="'+x+'" y="'+y+'" width="1.02" height="1.02"/>';
+  }
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+t+' '+t+'" role="img" aria-label="QR code for '+url.replace(/[&<>"]/g,"")+'"><rect width="'+t+'" height="'+t+'" fill="'+c.bg+'"/><g fill="'+c.fg+'">'+d+'</g></svg>';
+}
+function setButtons(on){["expand","dlpng","dlsvg"].forEach(function(i){$(i).disabled=!on})}
+function render(){
+  var raw=$("url").value,u=normalize(raw);
+  $("err").textContent="";
+  if(u===""){state.svg="";state.url="";$("stage").innerHTML='<div class="empty">Enter a web address to see your QR code here.</div>';$("target").textContent="";setButtons(false);return}
+  if(u===null){$("err").textContent="That doesn’t look like a valid web address. Try something like ey.com or https://www.ey.com/en_in.";state.svg="";setButtons(false);return}
+  try{
+    state.svg=makeSvg(u,state.style,state.color,$("ec").value);state.url=u;
+    $("stage").innerHTML='<div class="qrbox" id="qrbox" title="Select to expand">'+state.svg+'</div>';
+    $("qrbox").onclick=openBig;
+    $("target").textContent="Opens: "+u;setButtons(true);
+  }catch(e){$("err").textContent="This link is too long for the chosen error correction. Choose a lower level or a shorter link.";state.svg="";setButtons(false)}
+}
+function openBig(){if(!state.svg)return;$("big").innerHTML=state.svg;$("target2").textContent="Opens: "+state.url;$("dlg").showModal()}
+function toast(m){$("toast").textContent=m;setTimeout(function(){if($("toast").textContent===m)$("toast").textContent=""},3500)}
+function fname(ext){return "ey-qr-"+state.url.replace(/^https?:\/\//,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").slice(0,40)+"."+ext}
+async function save(name,data){
+  var dl=null;try{dl=await claude.use("downloads")}catch(e){}
+  if(dl){try{await dl.save({filename:name,data:data});toast("Saved "+name)}catch(e){if(!e||e.code!=="declined")toast("Download unavailable here.")}return}
+  var a=document.createElement("a"),b=data instanceof Blob?data:new Blob([data],{type:"image/svg+xml"});
+  a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();toast("Downloading "+name);
+}
+function dlSvg(){if(state.svg)save(fname("svg"),state.svg)}
+function dlPng(){
+  if(!state.svg)return;var px=+$("px").value,img=new Image();
+  img.onload=function(){var cv=document.createElement("canvas");cv.width=cv.height=px;var x=cv.getContext("2d");x.imageSmoothingEnabled=false;x.drawImage(img,0,0,px,px);
+    cv.toBlob(function(b){if(b)save(fname("png"),b);else toast("Could not create PNG.")},"image/png")};
+  img.onerror=function(){toast("Could not create PNG.")};
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(state.svg);
+}
+build();
+var timer;
+$("url").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(render,250)});
+$("ec").addEventListener("change",render);
+document.addEventListener("change",function(e){
+  if(e.target.name==="style"){state.style=e.target.value;render()}
+  if(e.target.name==="color"){state.color=e.target.value;render()}
+});
+$("expand").onclick=openBig;$("dlpng").onclick=dlPng;$("dlsvg").onclick=dlSvg;
+$("dlpng2").onclick=dlPng;$("dlsvg2").onclick=dlSvg;
+$("close").onclick=function(){$("dlg").close()};
+$("dlg").addEventListener("click",function(e){if(e.target===$("dlg"))$("dlg").close()});
+})();
+</script>
+</body>
+</html>
